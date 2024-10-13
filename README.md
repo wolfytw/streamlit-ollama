@@ -1,39 +1,39 @@
-# Streamlit LLM Chatbot (Llama 3)
 
-Using Facebook's Llama 3, this is my Streamlit app, which leverages creates two docker containers, one of which is the LLM that will run *locally* on your machine (which might be slow) and the other is the front-end application, which is served on `localhost:8501`. There are options to fine-tune Llama 3, but a more effective approach is to simply have Llama pull from a database that I create, i.e., Retrieval Augmented Generation (RAG).
+# Streamlit LLM 聊天機器人 (Llama 3)
+
+使用 Facebook 的 Llama 3，這是 Streamlit 應用程式，它建立了兩個 Docker 容器，其中一個是本地運行在電腦上的 LLM (這可能會很慢)，另一個是前端應用程式，該應用程式會在 `localhost:8501` 上提供服務。可以選擇微調 Llama 3，但更有效的方法是讓 Llama 從建立的資料庫中提取資料，即檢索增強生成 (RAG)。
 
 ![](images/chatbot-screenshot.png)
 
-In order to use this repository, you would
+若要使用此git庫，需進行以下操作：
 
-1. Clone it
-1. Build the Docker container with `docker build -t streamlit-ollama .`
-1. Run `docker-compose up`
-1. Download your model
-1. Go to `localhost:8501`
+1. git clone 這個庫
+2. 使用 `docker build -t streamlit-ollama .` 構建 Docker 容器
+3. 執行 `docker-compose up`
+4. 在容器中下載模型
+5. 前往 `localhost:8501`
 
-I've added a `.gitignore`, because you need the initial Llama 3 LLM parameters themselves, which you can pull down into a `data` folder. You'll need to do that in your docker container, where the names in the `yml` file provide the arguments to the following command that runs in your container:
+已添加 `.gitignore` 檔案，因為需要初始的 Llama 3 LLM 參數，這些參數可以下載到 `data` 資料夾中。需要在 Docker 容器中執行此操作，`yml` 檔案中的名稱會提供參數給以下命令，在容器中執行以下命令，以便下載模型：
 
 ```
-docker exec -it streamlit-llm ollama run llama3
+docker exec -it streamlit-llm ollama run phi3.5
 ```
 
-This downloads your model into the `./data/ollama` folder, which internally maps to `/root/.ollama` in the container. (BTW, when you run the LLM, it will be served on port 11434, which the streamlit app queries.)
+這會將模型下載到 `./data/ollama` 資料夾，該資料夾在容器內對應到 `/root/.ollama`。(順便提一下，當執行 LLM 時，它會在埠 11434 上提供服務，而 Streamlit 應用程式則會查詢該埠。)
 
 ![](images/diagram.png)
 
+## 背景
 
-## Background
-
-What are `Ollama` and `Langchain`? They're complementary tools that work together to make LLMs more accessible and useful for developers. Ollama is a Python library that runs open-source LLMs (or calls paid ones with a key). It provides a simple interface for interacting with the models, enabling us to send text prompts and receive responses (via json). The most efficient ones that I've used are from [Facebook](https://llama.meta.com/), although they're slow.
+什麼是 `Ollama` 和 `Langchain`？它們是相輔相成的工具，協助開發人員更方便地使用 LLM。Ollama 是一個 Python 函式庫，執行開源 LLM (或使用金鑰呼叫付費的 LLM)。它提供了一個簡單的介面來與模型互動，使我們能夠傳送文字提示並接收回應 (以 json 格式)。我用過最有效的模型是 [Facebook](https://llama.meta.com/) 的，但它們相對較慢。
 
 Ollama:
 
-Gemini actually provides a pretty good analogy: imagine your app as a race car. Ollama is the powerful car engine under the hood. Langchain is the cockpit / controls of that car (e.g., steering wheels, pedals, etc.)
+Gemini 其實提供了一個很好的類比：想像應用程式是一輛賽車。Ollama 就是賽車引擎的動力來源，而 Langchain 則是賽車的駕駛艙和控制裝置 (如方向盤、踏板等)。
 
-## Embeddings
+## 嵌入
 
-Ollama also has built in functions to obtain embeddings. After you've built your container (though alternatively, you can create a new Docker image), you can go into the container and set up Python3.
+Ollama 也內建了取得嵌入向量的功能。在構建容器後 (當然，也可以選擇建立一個新的 Docker 映像)，可以進入容器並設置 Python3。
 
 ```
     1  ls
@@ -45,24 +45,20 @@ Ollama also has built in functions to obtain embeddings. After you've built your
     7  pip install ipython
 ```
 
-Inside the Python shell, you can then do something like this:
+在 Python shell 中，可以進行如下操作：
 
 ```
 import ollama
-response = ollama.chat(model='llama3', messages = [ { 'role': 'user', 'content': "I'm testing the interface with Python. Hello?"},])
+response = ollama.chat(model='llama3', messages = [ { 'role': 'user', 'content': "我正在測試 Python 介面。你好嗎？"},])
 print(response['message']['content'])
 
-embedding = ollama.embeddings(model= 'llama3', prompt= 'Can I get an embedding')
+embedding = ollama.embeddings(model= 'llama3', prompt= '我能得到一個嵌入向量嗎')
 print(embedding['embedding'])
 ```
 
+## 參考
 
-## References
+以下是我查閱過的一些有用的部落格：
 
-Here are some useful blogs that I reviewed. 
-
-* [A B Vijay Kumar](https://abvijaykumar.medium.com/ollama-build-a-chatbot-with-langchain-ollama-deploy-on-docker-5dfcfd140363) - Effectively what I've done here.
-* [Ollama's Python RAG Code](https://github.com/ollama/ollama/blob/main/examples/langchain-python-rag-document/main.py) - From Ollama's site
-
-
-
+* [A B Vijay Kumar](https://abvijaykumar.medium.com/ollama-build-a-chatbot-with-langchain-ollama-deploy-on-docker-5dfcfd140363) - 基本上是以此為範本的。
+* [Ollama 的 Python RAG 代碼](https://github.com/ollama/ollama/blob/main/examples/langchain-python-rag-document/main.py) - 來自 Ollama 的網站。
