@@ -4,14 +4,14 @@ services:
     image: ollama/ollama
     container_name: streamlit-llm
     volumes:
-      - E:\wolfytien\github\streamlit-ollama\data
+      - .\data\ollama:/root/.ollama
     ports:
       - 11434:11434
   streamlit-app:
     image: streamlit-ollama
     container_name: streamlit-app
     volumes:
-      - E:\wolfytien\github\streamlit-ollama\app:/app
+      - %CD%:/app
     ports:
       - 8501:8501
 
