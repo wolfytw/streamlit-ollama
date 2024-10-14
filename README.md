@@ -9,7 +9,7 @@
 
 1. git clone 這個庫
 2. 使用 `docker build -t streamlit-ollama .` 構建 Docker 容器
-3. 執行 `docker-compose up`
+3. Linux\Mac 執行 `docker-compose up` Windows 執行 `docker-compose -f docker-compose-windows.yml up`
 4. 在容器中下載模型
 5. 前往 `localhost:8501`
 
